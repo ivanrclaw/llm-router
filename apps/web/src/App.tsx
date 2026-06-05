@@ -1,6 +1,7 @@
 import { TeamSwitcher } from "./components/TeamSwitcher";
 import { ApiKeysPage } from "./pages/ApiKeysPage";
 import { ProviderKeysPage } from "./pages/ProviderKeysPage";
+import { ModelsPage } from "./pages/ModelsPage";
 import { t, type Locale } from "./lib/i18n";
 import { LoginPage, RegisterPage } from "./pages/AuthPages";
 
@@ -32,6 +33,9 @@ export function App({ locale = "en" }: { locale?: Locale }) {
         </div>
         <div className="lg:col-span-2">
           <ProviderKeysPage locale={locale} providerKeys={[{ id: "demo-provider-key", providerSlug: "opencode-zen", providerName: "OpenCode Zen", name: "Demo Zen key", keyPrefix: "oz_demo_", priority: 10, rpmLimit: 60, isEnabled: true, healthStatus: "unknown" }]} />
+        </div>
+        <div className="lg:col-span-2">
+          <ModelsPage locale={locale} models={[{ id: "demo-model", providerSlug: "opencode-zen", externalModelId: "big-pickle", displayName: "Big Pickle", endpointType: "openai_chat_completions", tags: ["free", "coding"], isFree: true, isEnabled: true, pricingConfidence: "docs_pricing_verified", currentPricing: { inputUsdPer1M: 0, outputUsdPer1M: 0, isFree: true } }]} />
         </div>
       </main>
     </div>

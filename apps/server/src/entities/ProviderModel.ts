@@ -11,12 +11,12 @@ export class ProviderModel {
   @Column({ type: "text" }) providerId!: string;
   @Column({ type: "text" }) externalModelId!: string;
   @Column({ type: "text" }) displayName!: string;
-  @Column({ type: "integer" }) endpointType!: ProviderEndpointType;
+  @Column({ type: "text" }) endpointType!: ProviderEndpointType;
   @Column({ type: "integer", nullable: true }) contextWindowTokens!: number | null;
   @Column({ type: "text", default: "[]" }) tagsJson!: string;
   @Column({ type: "text", default: "{}" }) capabilitiesJson!: string;
   @Column({ type: "boolean", default: false }) isFree!: boolean;
-  @Column({ type: "text", default: true }) isEnabled!: boolean;
+  @Column({ type: "boolean", default: true }) isEnabled!: boolean;
   @Column({ type: "text", default: "unknown" }) pricingConfidence!: PricingConfidence;
   @Column({ type: "text", default: "{}" }) metadataJson!: string;
   @Column({ type: "datetime", nullable: true }) deprecatedAt!: Date | null;

@@ -46,6 +46,18 @@ export const dictionaries = {
     unknown: "Unknown",
     rateLimited: "Rate limited",
     invalid: "Invalid",
+
+    modelsTitle: "Model catalog",
+    modelsSubtitle: "Browse OpenCode Zen models, pricing, tags, and chat compatibility.",
+    syncModels: "Sync models",
+    noModels: "No models yet.",
+    freeModel: "Free",
+    paidModel: "Paid",
+    unknownPricing: "Unknown pricing",
+    endpoint: "Endpoint",
+    coding: "Coding",
+    pricing: "Pricing",
+    confidence: "Confidence",
   },
   es: {
     appSubtitle: "Gateway LLM multi-equipo con categorización de modelos",
@@ -92,6 +104,18 @@ export const dictionaries = {
     unknown: "Desconocida",
     rateLimited: "Limitada",
     invalid: "Inválida",
+
+    modelsTitle: "Catálogo de modelos",
+    modelsSubtitle: "Explora modelos de OpenCode Zen, precios, etiquetas y compatibilidad chat.",
+    syncModels: "Sincronizar modelos",
+    noModels: "Aún no hay modelos.",
+    freeModel: "Gratis",
+    paidModel: "De pago",
+    unknownPricing: "Precio desconocido",
+    endpoint: "Endpoint",
+    coding: "Coding",
+    pricing: "Precio",
+    confidence: "Confianza",
   },
 } as const;
 
