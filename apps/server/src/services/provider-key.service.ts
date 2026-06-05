@@ -172,10 +172,11 @@ export class ProviderKeyService {
     return toView(await this.getById(teamId, keyId));
   }
 
-  async selectUsableKey(input: { teamId: string; providerSlug: string }): Promise<SelectedProviderKey | null> {
+  async selectUsableKey(input: { teamId: string; providerSlug: string; excludeKeyIds?: string[] }): Promise<SelectedProviderKey | null> {
     const rows = await this.listRows(input.teamId, input.providerSlug);
     const now = Date.now();
     for (const row of rows) {
+      if (input.excludeKeyIds?.includes(row.id)) continue;
       if (!(row.isEnabled === true || row.isEnabled === 1)) continue;
       if (row.revokedAt) continue;
       if (row.cooldownUntil && new Date(row.cooldownUntil).getTime() > now) continue;
