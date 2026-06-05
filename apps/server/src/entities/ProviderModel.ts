@@ -1,0 +1,25 @@
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+
+export type ProviderEndpointType = "openai_chat_completions" | "openai_responses" | "anthropic_messages" | "google_model_endpoint";
+export type PricingConfidence = "docs_pricing_verified" | "live_model_id_inferred" | "manual_admin_override" | "unknown";
+
+@Entity("provider_models")
+@Index(["providerId", "externalModelId"], { unique: true })
+@Index(["providerId", "endpointType", "isEnabled"])
+export class ProviderModel {
+  @PrimaryGeneratedColumn("uuid") id!: string;
+  @Column() providerId!: string;
+  @Column() externalModelId!: string;
+  @Column() displayName!: string;
+  @Column() endpointType!: ProviderEndpointType;
+  @Column({ type: "integer", nullable: true }) contextWindowTokens!: number | null;
+  @Column({ type: "text", default: "[]" }) tagsJson!: string;
+  @Column({ type: "text", default: "{}" }) capabilitiesJson!: string;
+  @Column({ default: false }) isFree!: boolean;
+  @Column({ default: true }) isEnabled!: boolean;
+  @Column({ default: "unknown" }) pricingConfidence!: PricingConfidence;
+  @Column({ type: "text", default: "{}" }) metadataJson!: string;
+  @Column({ type: "datetime", nullable: true }) deprecatedAt!: Date | null;
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" }) createdAt!: Date;
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" }) updatedAt!: Date;
+}
