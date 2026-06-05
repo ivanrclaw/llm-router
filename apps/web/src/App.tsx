@@ -1,4 +1,5 @@
 import { TeamSwitcher } from "./components/TeamSwitcher";
+import { ApiKeysPage } from "./pages/ApiKeysPage";
 import { t, type Locale } from "./lib/i18n";
 import { LoginPage, RegisterPage } from "./pages/AuthPages";
 
@@ -24,6 +25,9 @@ export function App({ locale = "en" }: { locale?: Locale }) {
             teams={[{ id: "demo", name: "Demo Team", role: "owner" }]}
             selectedTeamId="demo"
           />
+        </div>
+        <div className="lg:col-span-2">
+          <ApiKeysPage locale={locale} apiKeys={[{ id: "demo-key", name: "Demo key", keyPrefix: "lr_demo1234", scopes: ["models:read"] }]} />
         </div>
       </main>
     </div>
