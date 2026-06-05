@@ -1,24 +1,15 @@
 import "reflect-metadata";
-import express from "express";
-import cors from "cors";
 import { AppDataSource } from "./data-source.js";
-import { healthRouter } from "./routes/health.js";
+import { createApp } from "./app.js";
 
-const app = express();
-const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
+const PORT = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3001;
 
-app.use(cors());
-app.use(express.json());
-
-// Routes
-app.use("/api", healthRouter);
-
-// Start server
 async function main() {
   try {
     await AppDataSource.initialize();
     console.log("✓ Database connected");
 
+    const app = createApp();
     app.listen(PORT, () => {
       console.log(`✓ Server running on http://localhost:${PORT}`);
     });
@@ -28,4 +19,4 @@ async function main() {
   }
 }
 
-main();
+void main();
