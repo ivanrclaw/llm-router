@@ -15,7 +15,7 @@ export class SessionAffinity {
   @Column({ type: "datetime" }) expiresAt!: Date;
   @Column({ type: "integer", default: 0 }) hitCount!: number;
   @Column({ type: "integer", default: 0 }) failureCount!: number;
-  @Column({ type: "datetime", default: false }) isDegraded!: boolean;
+  @Column({ type: "boolean", default: false }) isDegraded!: boolean;
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" }) firstSeenAt!: Date;
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" }) lastSeenAt!: Date;
 }

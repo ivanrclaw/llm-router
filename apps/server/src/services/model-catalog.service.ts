@@ -16,7 +16,7 @@ type ModelRow = {
 };
 
 export type ModelCatalogItem = {
-  id: string; providerSlug: string; providerName: string; externalModelId: string; displayName: string; endpointType: ProviderEndpointType;
+  id: string; providerId: string; providerSlug: string; providerName: string; externalModelId: string; displayName: string; endpointType: ProviderEndpointType;
   contextWindowTokens: number | null; tags: string[]; capabilities: Record<string, unknown>; isFree: boolean; isEnabled: boolean;
   pricingConfidence: PricingConfidence; metadata: Record<string, unknown>; deprecatedAt: string | null; sourceUrl: string | null; sourceUpdatedAt: string | null;
   currentPricing: null | { inputUsdPer1M: number; outputUsdPer1M: number; cachedReadUsdPer1M: number | null; cachedWriteUsdPer1M: number | null; isFree: boolean; pricingConfidence: PricingConfidence; sourceUrl: string; sourceUpdatedAt: string };
@@ -62,6 +62,7 @@ function rowToItem(row: ModelRow): ModelCatalogItem {
   const metadata = JSON.parse(row.metadataJson || "{}") as Record<string, unknown>;
   return {
     id: row.id,
+    providerId: row.providerId,
     providerSlug: row.providerSlug,
     providerName: row.providerName,
     externalModelId: row.externalModelId,

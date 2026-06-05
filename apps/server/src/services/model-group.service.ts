@@ -118,7 +118,7 @@ export class ModelGroupService {
   private async ensureDefault(teamId: string, alias: string, displayName: string, policy: ModelGroupPolicy, models: ModelCatalogItem[]): Promise<void> {
     const existing = (await this.dataSource.query("select id from model_groups where teamId = ? and alias = ?", [teamId, alias])) as Array<{ id: string }>;
     if (existing[0]) return;
-    await this.create(teamId, { alias, displayName, policy, candidates: models.map((model, index) => ({ providerModelId: model.id, priority: (index + 1) * 10, weight: Math.max(1, 10 - index) })) });
+    await this.create(teamId, { alias, displayName, policy, candidates: models.map((model, index) => ({ providerModelId: model.id, priority: 10, weight: Math.max(1, 10 - index) })) });
   }
 
   private async hydrate(row: GroupRow): Promise<ModelGroupView> {
@@ -139,7 +139,7 @@ export class ModelGroupService {
   }
 
   private rowToModel(row: CandidateRow): ModelCatalogItem {
-    return { id: row.providerModelId, providerSlug: row.providerSlug, providerName: row.providerSlug, externalModelId: row.externalModelId, displayName: row.externalModelId, endpointType: row.endpointType, contextWindowTokens: null, tags: JSON.parse(row.tagsJson || "[]"), capabilities: {}, isFree: isEnabled(row.isFree), isEnabled: isEnabled(row.modelIsEnabled), pricingConfidence: "unknown", metadata: {}, deprecatedAt: row.deprecatedAt, sourceUrl: null, sourceUpdatedAt: null, currentPricing: row.inputUsdPer1M === null ? null : { inputUsdPer1M: Number(row.inputUsdPer1M), outputUsdPer1M: Number(row.outputUsdPer1M ?? 0), cachedReadUsdPer1M: null, cachedWriteUsdPer1M: null, isFree: isEnabled(row.isFree), pricingConfidence: "unknown", sourceUrl: "", sourceUpdatedAt: "" } };
+    return { id: row.providerModelId, providerId: "", providerSlug: row.providerSlug, providerName: row.providerSlug, externalModelId: row.externalModelId, displayName: row.externalModelId, endpointType: row.endpointType, contextWindowTokens: null, tags: JSON.parse(row.tagsJson || "[]"), capabilities: {}, isFree: isEnabled(row.isFree), isEnabled: isEnabled(row.modelIsEnabled), pricingConfidence: "unknown", metadata: {}, deprecatedAt: row.deprecatedAt, sourceUrl: null, sourceUpdatedAt: null, currentPricing: row.inputUsdPer1M === null ? null : { inputUsdPer1M: Number(row.inputUsdPer1M), outputUsdPer1M: Number(row.outputUsdPer1M ?? 0), cachedReadUsdPer1M: null, cachedWriteUsdPer1M: null, isFree: isEnabled(row.isFree), pricingConfidence: "unknown", sourceUrl: "", sourceUpdatedAt: "" } };
   }
 
   private candidateWarnings(policy: ModelGroupPolicy, model?: ModelCatalogItem): string[] {
