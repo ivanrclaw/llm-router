@@ -2,6 +2,7 @@ import { TeamSwitcher } from "./components/TeamSwitcher";
 import { ApiKeysPage } from "./pages/ApiKeysPage";
 import { ProviderKeysPage } from "./pages/ProviderKeysPage";
 import { ModelsPage } from "./pages/ModelsPage";
+import { ModelGroupsPage } from "./pages/ModelGroupsPage";
 import { t, type Locale } from "./lib/i18n";
 import { LoginPage, RegisterPage } from "./pages/AuthPages";
 
@@ -36,6 +37,9 @@ export function App({ locale = "en" }: { locale?: Locale }) {
         </div>
         <div className="lg:col-span-2">
           <ModelsPage locale={locale} models={[{ id: "demo-model", providerSlug: "opencode-zen", externalModelId: "big-pickle", displayName: "Big Pickle", endpointType: "openai_chat_completions", tags: ["free", "coding"], isFree: true, isEnabled: true, pricingConfidence: "docs_pricing_verified", currentPricing: { inputUsdPer1M: 0, outputUsdPer1M: 0, isFree: true } }]} />
+        </div>
+        <div className="lg:col-span-2">
+          <ModelGroupsPage locale={locale} groups={[{ id: "demo-group", alias: "free-coding", displayName: "Free Coding", isEnabled: true, stickySessionTtlSeconds: 86400, policy: { endpointType: "openai_chat_completions", freeOnly: true, requiredTags: ["coding"] }, candidates: [{ id: "demo-candidate", externalModelId: "big-pickle", providerSlug: "opencode-zen", priority: 10, weight: 3, isEnabled: true, warnings: [] }] }]} />
         </div>
       </main>
     </div>

@@ -10,7 +10,7 @@ export class ModelGroup {
   @Column({ type: "text", nullable: true }) description!: string | null;
   @Column({ type: "text", default: "{}" }) policyJson!: string;
   @Column({ type: "integer", default: 86400 }) stickySessionTtlSeconds!: number;
-  @Column({ type: "datetime", default: true }) isEnabled!: boolean;
+  @Column({ type: "boolean", default: true }) isEnabled!: boolean;
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" }) createdAt!: Date;
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" }) updatedAt!: Date;
 }
