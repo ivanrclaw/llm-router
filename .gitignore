@@ -6,6 +6,7 @@ dist/
 build/
 .next/
 .cache/
+*.tsbuildinfo
 
 # Turbo
 .turbo/
