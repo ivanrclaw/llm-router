@@ -4,10 +4,10 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 @Index(["teamId", "createdAt"])
 export class AuditLog {
   @PrimaryGeneratedColumn("uuid") id!: string;
-  @Column() teamId!: string;
+  @Column({ type: "text" }) teamId!: string;
   @Column({ type: "text", nullable: true }) actorUserId!: string | null;
-  @Column() action!: string;
-  @Column() resourceType!: string;
+  @Column({ type: "text" }) action!: string;
+  @Column({ type: "text" }) resourceType!: string;
   @Column({ type: "text", nullable: true }) resourceId!: string | null;
   @Column({ type: "text", nullable: true }) ipHash!: string | null;
   @Column({ type: "text", nullable: true }) userAgentHash!: string | null;

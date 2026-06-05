@@ -5,12 +5,12 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 export class ModelGroup {
   @PrimaryGeneratedColumn("uuid") id!: string;
   @Column({ type: "text", nullable: true }) teamId!: string | null;
-  @Column() alias!: string;
-  @Column() displayName!: string;
+  @Column({ type: "text" }) alias!: string;
+  @Column({ type: "text" }) displayName!: string;
   @Column({ type: "text", nullable: true }) description!: string | null;
   @Column({ type: "text", default: "{}" }) policyJson!: string;
   @Column({ type: "integer", default: 86400 }) stickySessionTtlSeconds!: number;
-  @Column({ default: true }) isEnabled!: boolean;
+  @Column({ type: "datetime", default: true }) isEnabled!: boolean;
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" }) createdAt!: Date;
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" }) updatedAt!: Date;
 }

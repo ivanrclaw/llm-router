@@ -8,16 +8,16 @@ export type PricingConfidence = "docs_pricing_verified" | "live_model_id_inferre
 @Index(["providerId", "endpointType", "isEnabled"])
 export class ProviderModel {
   @PrimaryGeneratedColumn("uuid") id!: string;
-  @Column() providerId!: string;
-  @Column() externalModelId!: string;
-  @Column() displayName!: string;
-  @Column() endpointType!: ProviderEndpointType;
+  @Column({ type: "text" }) providerId!: string;
+  @Column({ type: "text" }) externalModelId!: string;
+  @Column({ type: "text" }) displayName!: string;
+  @Column({ type: "integer" }) endpointType!: ProviderEndpointType;
   @Column({ type: "integer", nullable: true }) contextWindowTokens!: number | null;
   @Column({ type: "text", default: "[]" }) tagsJson!: string;
   @Column({ type: "text", default: "{}" }) capabilitiesJson!: string;
-  @Column({ default: false }) isFree!: boolean;
-  @Column({ default: true }) isEnabled!: boolean;
-  @Column({ default: "unknown" }) pricingConfidence!: PricingConfidence;
+  @Column({ type: "boolean", default: false }) isFree!: boolean;
+  @Column({ type: "text", default: true }) isEnabled!: boolean;
+  @Column({ type: "text", default: "unknown" }) pricingConfidence!: PricingConfidence;
   @Column({ type: "text", default: "{}" }) metadataJson!: string;
   @Column({ type: "datetime", nullable: true }) deprecatedAt!: Date | null;
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" }) createdAt!: Date;

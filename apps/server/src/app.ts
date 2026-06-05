@@ -1,15 +1,32 @@
 import "reflect-metadata";
 import cors from "cors";
 import express, { type Express } from "express";
+import type { DataSource } from "typeorm";
+import { AppDataSource } from "./data-source.js";
+import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
+import { createAuthRouter } from "./routes/auth.routes.js";
 import { healthRouter } from "./routes/health.js";
+import { createInvitationRouter } from "./routes/invitation.routes.js";
+import { createTeamRouter } from "./routes/team.routes.js";
 
-export function createApp(): Express {
+export type AppDependencies = {
+  dataSource?: DataSource;
+};
+
+export function createApp(dependencies: AppDependencies = {}): Express {
   const app = express();
+  const dataSource = dependencies.dataSource ?? AppDataSource;
 
   app.use(cors());
   app.use(express.json());
 
   app.use("/api", healthRouter);
+  app.use("/api/auth", createAuthRouter(dataSource));
+  app.use("/api/teams", createTeamRouter(dataSource));
+  app.use("/api/invitations", createInvitationRouter(dataSource));
+
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
   return app;
 }

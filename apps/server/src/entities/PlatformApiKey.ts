@@ -4,11 +4,11 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 @Index(["teamId", "userId", "revokedAt"])
 export class PlatformApiKey {
   @PrimaryGeneratedColumn("uuid") id!: string;
-  @Column() teamId!: string;
-  @Column() userId!: string;
-  @Column() name!: string;
-  @Column() keyPrefix!: string;
-  @Index({ unique: true }) @Column() keyHash!: string;
+  @Column({ type: "text" }) teamId!: string;
+  @Column({ type: "text" }) userId!: string;
+  @Column({ type: "text" }) name!: string;
+  @Column({ type: "text" }) keyPrefix!: string;
+  @Index({ unique: true }) @Column({ type: "text" }) keyHash!: string;
   @Column({ type: "text", default: "[]" }) scopesJson!: string;
   @Column({ type: "integer", nullable: true }) monthlyBudgetUsdCents!: number | null;
   @Column({ type: "integer", nullable: true }) dailyBudgetUsdCents!: number | null;

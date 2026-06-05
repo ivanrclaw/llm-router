@@ -6,22 +6,22 @@ export class User {
   id!: string;
 
   @Index({ unique: true })
-  @Column()
+  @Column({ type: "text" })
   email!: string;
 
-  @Column()
+  @Column({ type: "text" })
   name!: string;
 
-  @Column()
+  @Column({ type: "text" })
   passwordHash!: string;
 
-  @Column({ default: "en" })
+  @Column({ type: "text", default: "en" })
   locale!: string;
 
-  @Column({ default: "UTC" })
+  @Column({ type: "text", default: "UTC" })
   timezone!: string;
 
-  @Column({ default: true })
+  @Column({ type: "boolean", default: true })
   isActive!: boolean;
 
   @Column({ type: "datetime", nullable: true })

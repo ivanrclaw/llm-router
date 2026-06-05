@@ -4,8 +4,8 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 @Index(["date", "teamId", "userId", "modelId", "platformApiKeyId", "providerApiKeyId"])
 export class UsageDailyAggregate {
   @PrimaryGeneratedColumn("uuid") id!: string;
-  @Column() date!: string;
-  @Column() teamId!: string;
+  @Column({ type: "text" }) date!: string;
+  @Column({ type: "text" }) teamId!: string;
   @Column({ type: "text", nullable: true }) userId!: string | null;
   @Column({ type: "text", nullable: true }) platformApiKeyId!: string | null;
   @Column({ type: "text", nullable: true }) modelId!: string | null;

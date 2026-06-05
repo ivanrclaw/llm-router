@@ -4,10 +4,10 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 @Index(["scopeType", "scopeId", "periodType", "periodKey"], { unique: true })
 export class BudgetLedger {
   @PrimaryGeneratedColumn("uuid") id!: string;
-  @Column() scopeType!: string;
-  @Column() scopeId!: string;
-  @Column() periodType!: "daily" | "monthly";
-  @Column() periodKey!: string;
+  @Column({ type: "text" }) scopeType!: string;
+  @Column({ type: "text" }) scopeId!: string;
+  @Column({ type: "text" }) periodType!: "daily" | "monthly";
+  @Column({ type: "integer" }) periodKey!: string;
   @Column({ type: "integer", default: 0 }) spentUsdCents!: number;
   @Column({ type: "integer", default: 0 }) reservedUsdCents!: number;
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" }) updatedAt!: Date;
