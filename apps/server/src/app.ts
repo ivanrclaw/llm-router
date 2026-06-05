@@ -10,6 +10,7 @@ import { healthRouter } from "./routes/health.js";
 import { createInvitationRouter } from "./routes/invitation.routes.js";
 import { createTeamRouter } from "./routes/team.routes.js";
 import { createOpenAiCompatibleRouter } from "./routes/openai-compatible.routes.js";
+import { createProviderKeyRouter } from "./routes/provider-key.routes.js";
 
 export type AppDependencies = {
   dataSource?: DataSource;
@@ -25,6 +26,7 @@ export function createApp(dependencies: AppDependencies = {}): Express {
   app.use("/api", healthRouter);
   app.use("/api/auth", createAuthRouter(dataSource));
   app.use("/api/teams/:teamId/api-keys", createApiKeyRouter(dataSource));
+  app.use("/api/teams/:teamId/provider-keys", createProviderKeyRouter(dataSource));
   app.use("/api/teams", createTeamRouter(dataSource));
   app.use("/api/invitations", createInvitationRouter(dataSource));
   app.use("/v1", createOpenAiCompatibleRouter(dataSource));

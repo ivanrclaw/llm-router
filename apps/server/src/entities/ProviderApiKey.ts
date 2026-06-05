@@ -9,18 +9,19 @@ export class ProviderApiKey {
   @Column({ type: "text" }) providerId!: string;
   @Column({ type: "text" }) name!: string;
   @Column({ type: "text" }) keyPrefix!: string;
-  @Column({ type: "integer" }) encryptedKey!: string;
+  @Column({ type: "text" }) encryptedKey!: string;
   @Column({ type: "integer", default: 100 }) priority!: number;
   @Column({ type: "integer", nullable: true }) monthlyBudgetUsdCents!: number | null;
   @Column({ type: "integer", nullable: true }) dailyBudgetUsdCents!: number | null;
   @Column({ type: "integer", nullable: true }) rpmLimit!: number | null;
-  @Column({ type: "text", default: true }) isEnabled!: boolean;
-  @Column({ type: "datetime", default: "unknown" }) healthStatus!: string;
+  @Column({ type: "boolean", default: true }) isEnabled!: boolean;
+  @Column({ type: "text", default: "unknown" }) healthStatus!: string;
   @Column({ type: "datetime", nullable: true }) lastValidatedAt!: Date | null;
   @Column({ type: "datetime", nullable: true }) lastUsedAt!: Date | null;
   @Column({ type: "datetime", nullable: true }) lastErrorAt!: Date | null;
   @Column({ type: "text", nullable: true }) lastErrorCode!: string | null;
   @Column({ type: "datetime", nullable: true }) cooldownUntil!: Date | null;
+  @Column({ type: "datetime", nullable: true }) revokedAt!: Date | null;
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" }) createdAt!: Date;
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" }) updatedAt!: Date;
 }

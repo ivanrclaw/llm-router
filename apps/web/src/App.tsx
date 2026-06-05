@@ -1,5 +1,6 @@
 import { TeamSwitcher } from "./components/TeamSwitcher";
 import { ApiKeysPage } from "./pages/ApiKeysPage";
+import { ProviderKeysPage } from "./pages/ProviderKeysPage";
 import { t, type Locale } from "./lib/i18n";
 import { LoginPage, RegisterPage } from "./pages/AuthPages";
 
@@ -28,6 +29,9 @@ export function App({ locale = "en" }: { locale?: Locale }) {
         </div>
         <div className="lg:col-span-2">
           <ApiKeysPage locale={locale} apiKeys={[{ id: "demo-key", name: "Demo key", keyPrefix: "lr_demo1234", scopes: ["models:read"] }]} />
+        </div>
+        <div className="lg:col-span-2">
+          <ProviderKeysPage locale={locale} providerKeys={[{ id: "demo-provider-key", providerSlug: "opencode-zen", providerName: "OpenCode Zen", name: "Demo Zen key", keyPrefix: "oz_demo_", priority: 10, rpmLimit: 60, isEnabled: true, healthStatus: "unknown" }]} />
         </div>
       </main>
     </div>
