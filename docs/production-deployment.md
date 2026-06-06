@@ -14,7 +14,7 @@ fly secrets set \
 fly deploy --remote-only --config fly.toml
 ```
 
-The persistent SQLite database lives at `/data/llm-router.sqlite`; `fly.toml` mounts the `llm_router_data` volume at `/data` and probes `/api/ready`.
+The persistent SQLite database lives at `/data/llm-router.sqlite`; `fly.toml` mounts the `llm_router_data` volume at `/data` and probes `/api/ready`. The HTTP service is configured for scale-to-zero with `auto_stop_machines = "stop"`, `auto_start_machines = true`, and `min_machines_running = 0`, so Fly can stop the machine when idle and cold-start it on the next request.
 
 ## Runtime configuration
 

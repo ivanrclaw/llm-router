@@ -46,6 +46,7 @@ Use this checklist before declaring LLM Router production-ready.
 ## Fly.io release
 
 - [ ] `fly volumes list` shows `llm_router_data` mounted at `/data`.
+- [ ] `fly.toml` keeps scale-to-zero enabled: `auto_stop_machines = "stop"`, `auto_start_machines = true`, `min_machines_running = 0`.
 - [ ] Fly secrets are set: `JWT_SECRET`, `ENCRYPTION_KEY`, production `CORS_ORIGINS`.
 - [ ] `fly deploy --remote-only` succeeds.
 - [ ] `fly checks list` shows `/api/ready` passing.

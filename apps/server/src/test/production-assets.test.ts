@@ -47,6 +47,9 @@ describe("production deployment assets", () => {
     expect(envExample).not.toContain("sk-");
     expect(flyToml).toContain("source = \"llm_router_data\"");
     expect(flyToml).toContain("destination = \"/data\"");
+    expect(flyToml).toContain("auto_stop_machines = \"stop\"");
+    expect(flyToml).toContain("auto_start_machines = true");
+    expect(flyToml).toContain("min_machines_running = 0");
     expect(flyToml).toContain("/api/ready");
     expect(docs).toContain("fly volumes create llm_router_data");
     expect(docs).toContain("pnpm --filter @llm-router/server backup:sqlite");
