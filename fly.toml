@@ -1,4 +1,4 @@
-app = "llm-router"
+app = "llm-router-ivanrclaw"
 primary_region = "mad"
 
 [build]
@@ -10,7 +10,7 @@ primary_region = "mad"
   DATABASE_PATH = "/data/llm-router.sqlite"
   RUN_MIGRATIONS = "true"
   SERVE_WEB_DIST = "true"
-  CORS_ORIGINS = "https://llm-router.fly.dev"
+  CORS_ORIGINS = "https://llm-router-ivanrclaw.fly.dev"
   AUTH_RATE_LIMIT_RPM = "30"
   V1_RATE_LIMIT_RPM = "120"
 

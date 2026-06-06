@@ -5,8 +5,8 @@ This app is deployed as a single container: Express serves `/api/*` and `/v1/*`,
 ## Fly.io bootstrap
 
 ```bash
-fly apps create llm-router
-fly volumes create llm_router_data --region mad --size 1 --app llm-router
+fly apps create llm-router-ivanrclaw
+fly volumes create llm_router_data --region mad --size 1 --app llm-router-ivanrclaw
 fly secrets set \
   JWT_SECRET="$(openssl rand -base64 48)" \
   ENCRYPTION_KEY="$(openssl rand -base64 32)" \
@@ -23,7 +23,7 @@ Non-secret production defaults are versioned in `fly.toml` and `.env.example`:
 - `DATABASE_PATH=/data/llm-router.sqlite`
 - `RUN_MIGRATIONS=true`
 - `SERVE_WEB_DIST=true`
-- `CORS_ORIGINS=https://llm-router.fly.dev`
+- `CORS_ORIGINS=https://llm-router-ivanrclaw.fly.dev`
 - `AUTH_RATE_LIMIT_RPM=30`
 - `V1_RATE_LIMIT_RPM=120`
 

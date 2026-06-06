@@ -51,6 +51,7 @@ describe("production deployment assets", () => {
     expect(flyToml).toContain("auto_start_machines = true");
     expect(flyToml).toContain("min_machines_running = 0");
     expect(flyToml).toContain("/api/ready");
+    expect(flyToml).toContain("CORS_ORIGINS = \"https://llm-router-ivanrclaw.fly.dev\"");
     expect(docs).toContain("fly volumes create llm_router_data");
     expect(docs).toContain("pnpm --filter @llm-router/server backup:sqlite");
     expect(docs).toContain("restore");
