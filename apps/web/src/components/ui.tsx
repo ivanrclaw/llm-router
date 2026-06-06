@@ -14,7 +14,7 @@ export function Button({ variant = "primary", className, ...props }: ButtonHTMLA
     secondary: "border border-neutral-300 bg-white text-neutral-950 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-50 dark:hover:bg-neutral-900",
     danger: "bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600",
   } as const;
-  return <button className={cx("rounded-lg px-4 py-2 text-sm font-semibold transition", variants[variant], className)} type="button" {...props} />;
+  return <button className={cx("inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-ring", variants[variant], className)} type="button" {...props} />;
 }
 
 export function Skeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
