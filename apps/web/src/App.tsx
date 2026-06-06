@@ -15,6 +15,14 @@ type AppProps = { locale?: Locale; initialRoute?: string };
 
 type RouteId = "overview" | "stats" | "models" | "model-groups" | "api-keys" | "provider-keys" | "budgets" | "docs";
 
+type AuthUser = { id: string; name?: string; email: string };
+type AuthTeam = { id: string; name: string; role: "owner" | "admin" | "member" | "viewer" };
+type AuthSession = { token: string; user: AuthUser; teams: AuthTeam[] };
+type LoginValues = { email: string; password: string };
+type RegisterValues = { name: string; email: string; password: string; teamName: string };
+
+const SESSION_STORAGE_KEY = "llm-router-session";
+
 type NavItem = {
   routeId: RouteId;
   href: string;
@@ -76,6 +84,55 @@ function initialTheme(): Theme {
   const stored = window.localStorage.getItem("theme");
   if (stored === "dark" || stored === "light") return stored;
   return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function initialSession(): AuthSession | null {
+  if (typeof window === "undefined") return null;
+  const stored = window.localStorage.getItem(SESSION_STORAGE_KEY);
+  if (!stored) return null;
+  try {
+    const parsed = JSON.parse(stored) as AuthSession;
+    return parsed?.token && parsed?.user?.email ? parsed : null;
+  } catch {
+    window.localStorage.removeItem(SESSION_STORAGE_KEY);
+    return null;
+  }
+}
+
+function persistSession(session: AuthSession | null) {
+  if (typeof window === "undefined") return;
+  if (!session) {
+    window.localStorage.removeItem(SESSION_STORAGE_KEY);
+    return;
+  }
+  window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+}
+
+async function parseAuthResponse(response: Response, locale: Locale): Promise<AuthSession> {
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = payload?.error?.message ?? payload?.message ?? t(locale, "authErrorFallback");
+    throw new Error(message);
+  }
+  return { token: payload.token, user: payload.user, teams: payload.teams ?? [] };
+}
+
+async function loginRequest(values: LoginValues, locale: Locale) {
+  const response = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(values),
+  });
+  return parseAuthResponse(response, locale);
+}
+
+async function registerRequest(values: RegisterValues, locale: Locale) {
+  const response = await fetch("/api/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...values, locale }),
+  });
+  return parseAuthResponse(response, locale);
 }
 
 function currentRoute(initialRoute?: string) {
@@ -162,7 +219,7 @@ function DashboardDocs({ locale }: { locale: Locale }) {
   );
 }
 
-function AuthView({ locale, route, setLocale, theme, toggleTheme }: { locale: Locale; route: string; setLocale: (locale: Locale) => void; theme: Theme; toggleTheme: () => void }) {
+function AuthView({ locale, route, setLocale, theme, toggleTheme, error, isSubmitting, onLogin, onRegister }: { locale: Locale; route: string; setLocale: (locale: Locale) => void; theme: Theme; toggleTheme: () => void; error?: string | null; isSubmitting?: boolean; onLogin: (values: LoginValues) => void; onRegister: (values: RegisterValues) => void }) {
   const isRegister = route === "/register";
   const themeLabel = theme === "dark" ? t(locale, "switchToLightMode") : t(locale, "switchToDarkMode");
 
@@ -198,7 +255,7 @@ function AuthView({ locale, route, setLocale, theme, toggleTheme }: { locale: Lo
           </div>
         </section>
         <section className="w-full justify-self-center lg:justify-self-end">
-          {isRegister ? <RegisterPage locale={locale} /> : <LoginPage locale={locale} />}
+          {isRegister ? <RegisterPage locale={locale} error={error} isSubmitting={isSubmitting} onSubmit={onRegister} /> : <LoginPage locale={locale} error={error} isSubmitting={isSubmitting} onSubmit={onLogin} />}
           <p className="mt-4 text-center text-sm text-neutral-600 dark:text-neutral-400">
             {isRegister ? t(locale, "alreadyHaveAccount") : t(locale, "needAccount")} {" "}
             <a className="font-semibold text-neutral-950 underline underline-offset-4 dark:text-white" href={isRegister ? "/login" : "/register"}>
@@ -369,6 +426,10 @@ export function App({ locale = "en", initialRoute }: AppProps) {
   const [activeLocale, setActiveLocale] = useState<Locale>(locale);
   const [theme, setTheme] = useState<Theme>(() => initialTheme());
   const [route, setRoute] = useState(() => normalizeRoute(currentRoute(initialRoute)));
+  const [session, setSession] = useState<AuthSession | null>(() => initialSession());
+  const [pendingDashboardRoute, setPendingDashboardRoute] = useState(() => normalizeRoute(currentRoute(initialRoute)).startsWith("/dashboard") ? normalizeRoute(currentRoute(initialRoute)) : "/dashboard");
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   useEffect(() => {
@@ -396,14 +457,53 @@ export function App({ locale = "en", initialRoute }: AppProps) {
   const activeSectionLabel = useMemo(() => t(activeLocale, routeLabelKey(activeRouteId)), [activeLocale, activeRouteId]);
   const navigate = (href: string) => {
     const nextRoute = normalizeRoute(href);
+    if (nextRoute.startsWith("/dashboard")) {
+      setPendingDashboardRoute(nextRoute);
+    }
     setRoute(nextRoute);
     if (!initialRoute && typeof window !== "undefined" && window.location.pathname !== nextRoute) {
       window.history.pushState({}, "", nextRoute);
     }
   };
+  const completeAuthentication = (nextSession: AuthSession) => {
+    persistSession(nextSession);
+    setSession(nextSession);
+    setAuthError(null);
+    setRoute(pendingDashboardRoute);
+  };
+  const handleLogin = async (values: LoginValues) => {
+    setIsAuthSubmitting(true);
+    setAuthError(null);
+    try {
+      completeAuthentication(await loginRequest(values, activeLocale));
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : t(activeLocale, "authErrorFallback"));
+    } finally {
+      setIsAuthSubmitting(false);
+    }
+  };
+  const handleRegister = async (values: RegisterValues) => {
+    setIsAuthSubmitting(true);
+    setAuthError(null);
+    try {
+      completeAuthentication(await registerRequest(values, activeLocale));
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : t(activeLocale, "authErrorFallback"));
+    } finally {
+      setIsAuthSubmitting(false);
+    }
+  };
+  const signOut = () => {
+    persistSession(null);
+    setSession(null);
+    setPendingDashboardRoute(route.startsWith("/dashboard") ? route : "/dashboard");
+    setRoute("/login");
+  };
+  const isAuthRoute = route === "/login" || route === "/register";
+  const isProtectedRoute = route.startsWith("/dashboard") || route === "/";
 
-  if (route === "/login" || route === "/register") {
-    return <AuthView locale={activeLocale} route={route} setLocale={setActiveLocale} theme={theme} toggleTheme={toggleTheme} />;
+  if (isAuthRoute || (isProtectedRoute && !session)) {
+    return <AuthView locale={activeLocale} route={isAuthRoute ? route : "/login"} setLocale={setActiveLocale} theme={theme} toggleTheme={toggleTheme} error={authError} isSubmitting={isAuthSubmitting} onLogin={handleLogin} onRegister={handleRegister} />;
   }
 
   return (
@@ -426,8 +526,8 @@ export function App({ locale = "en", initialRoute }: AppProps) {
                   <p className="mt-1 text-xl font-semibold">{activeSectionLabel}</p>
                 </div>
               </div>
-              <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[34rem]">
-                <TeamSwitcher locale={activeLocale} teams={[{ id: "demo", name: "Demo Team", role: "owner" }]} selectedTeamId="demo" />
+              <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[46rem] xl:grid-cols-5">
+                <TeamSwitcher locale={activeLocale} teams={session?.teams.length ? session.teams : [{ id: "demo", name: "Demo Team", role: "owner" }]} selectedTeamId={session?.teams[0]?.id ?? "demo"} />
                 <label className="flex flex-col gap-1 text-sm font-medium">
                   {t(activeLocale, "language")}
                   <select aria-label={t(activeLocale, "language")} className="rounded-lg border border-neutral-300 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900" value={activeLocale} onChange={(event) => setActiveLocale(event.target.value as Locale)}>
@@ -436,6 +536,11 @@ export function App({ locale = "en", initialRoute }: AppProps) {
                   </select>
                 </label>
                 <Button className="px-3" variant="secondary" onClick={toggleTheme}>{themeLabel}</Button>
+                <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 text-xs dark:border-neutral-800 dark:bg-neutral-900">
+                  <p className="text-neutral-500">{t(activeLocale, "signedInAs")}</p>
+                  <p className="truncate font-semibold">{session?.user.name ?? session?.user.email}</p>
+                </div>
+                <Button className="px-3" variant="secondary" onClick={signOut}>{t(activeLocale, "signOut")}</Button>
               </div>
             </div>
           </header>
