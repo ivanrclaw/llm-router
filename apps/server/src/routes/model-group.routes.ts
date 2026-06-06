@@ -2,6 +2,7 @@ import { Router, type Request } from "express";
 import type { DataSource } from "typeorm";
 import { dashboardAuth, type AuthenticatedRequest } from "../middleware/dashboard-auth.js";
 import { ModelGroupService } from "../services/model-group.service.js";
+import { AuditLogService } from "../services/audit-log.service.js";
 import { TeamService } from "../services/team.service.js";
 
 function teamIdFrom(req: Request): string { return String((req.params as Record<string, string | undefined>).teamId ?? ""); }
@@ -11,6 +12,7 @@ export function createModelGroupRouter(dataSource: DataSource): Router {
   const router = Router({ mergeParams: true });
   const service = new ModelGroupService(dataSource);
   const teamService = new TeamService(dataSource);
+  const auditLogService = new AuditLogService(dataSource);
   router.use(dashboardAuth(dataSource));
 
   router.get("/", async (req, res, next) => {
@@ -37,7 +39,9 @@ export function createModelGroupRouter(dataSource: DataSource): Router {
       const auth = req as unknown as AuthenticatedRequest;
       const teamId = teamIdFrom(req);
       await teamService.requireRole(auth.user.id, teamId, "admin");
-      res.status(201).json({ group: await service.create(teamId, req.body) });
+      const group = await service.create(teamId, req.body);
+      await auditLogService.record({ teamId, actorUserId: auth.user.id, action: "model_group.created", resourceType: "model_group", resourceId: group.id, metadata: { alias: group.alias } });
+      res.status(201).json({ group });
     } catch (error) { next(error); }
   });
 

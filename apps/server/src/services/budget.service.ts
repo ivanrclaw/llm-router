@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import type { DataSource } from "typeorm";
 import { TeamService } from "./team.service.js";
 import { usagePeriodKeys } from "./usage.service.js";
+import { AuditLogService } from "./audit-log.service.js";
 
 export type BudgetScopeType = "team" | "user" | "platform_api_key" | "provider_api_key" | "model" | "model_group";
 
@@ -32,7 +33,11 @@ function cents(value: unknown): number | null {
 
 export class BudgetService {
   private readonly teamService: TeamService;
-  constructor(private readonly dataSource: DataSource) { this.teamService = new TeamService(dataSource); }
+  private readonly auditLogService: AuditLogService;
+  constructor(private readonly dataSource: DataSource) {
+    this.teamService = new TeamService(dataSource);
+    this.auditLogService = new AuditLogService(dataSource);
+  }
 
   async list(actorUserId: string, teamId: string): Promise<BudgetPolicyView[]> {
     await this.teamService.requireRole(actorUserId, teamId, "viewer");
@@ -64,6 +69,14 @@ export class BudgetService {
        on conflict(id) do update set monthlyBudgetUsdCents = excluded.monthlyBudgetUsdCents, dailyBudgetUsdCents = excluded.dailyBudgetUsdCents, hardLimit = excluded.hardLimit, alertThresholdsJson = excluded.alertThresholdsJson, updatedAt = CURRENT_TIMESTAMP`,
       [id, scopeType, scopeId, monthlyBudgetUsdCents, dailyBudgetUsdCents, hardLimit ? 1 : 0, JSON.stringify(alertThresholds)],
     );
+    await this.auditLogService.record({
+      teamId,
+      actorUserId,
+      action: "budget_policy.upserted",
+      resourceType: "budget_policy",
+      resourceId: id,
+      metadata: { scopeType, scopeId, monthlyBudgetUsdCents, dailyBudgetUsdCents, hardLimit, alertThresholds },
+    });
     return this.getById(id);
   }
 
