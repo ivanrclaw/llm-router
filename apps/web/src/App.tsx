@@ -3,6 +3,7 @@ import { ApiKeysPage } from "./pages/ApiKeysPage";
 import { ProviderKeysPage } from "./pages/ProviderKeysPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import { ModelGroupsPage } from "./pages/ModelGroupsPage";
+import { BudgetsPage } from "./pages/BudgetsPage";
 import { t, type Locale } from "./lib/i18n";
 import { LoginPage, RegisterPage } from "./pages/AuthPages";
 
@@ -40,6 +41,9 @@ export function App({ locale = "en" }: { locale?: Locale }) {
         </div>
         <div className="lg:col-span-2">
           <ModelGroupsPage locale={locale} groups={[{ id: "demo-group", alias: "free-coding", displayName: "Free Coding", isEnabled: true, stickySessionTtlSeconds: 86400, policy: { endpointType: "openai_chat_completions", freeOnly: true, requiredTags: ["coding"] }, candidates: [{ id: "demo-candidate", externalModelId: "big-pickle", providerSlug: "opencode-zen", priority: 10, weight: 3, isEnabled: true, warnings: [] }] }]} />
+        </div>
+        <div className="lg:col-span-2">
+          <BudgetsPage locale={locale} policies={[{ id: "demo-budget", scopeType: "team", scopeLabel: "Demo Team", dailyBudgetUsdCents: 500, monthlyBudgetUsdCents: 10000, hardLimit: true, alertThresholds: [50, 80] }]} />
         </div>
       </main>
     </div>

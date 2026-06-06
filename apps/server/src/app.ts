@@ -13,6 +13,7 @@ import { createOpenAiCompatibleRouter } from "./routes/openai-compatible.routes.
 import { createProviderKeyRouter } from "./routes/provider-key.routes.js";
 import { createModelGroupRouter } from "./routes/model-group.routes.js";
 import { createModelRouter } from "./routes/model.routes.js";
+import { createBudgetRouter } from "./routes/budget.routes.js";
 
 export type AppDependencies = {
   dataSource?: DataSource;
@@ -30,6 +31,7 @@ export function createApp(dependencies: AppDependencies = {}): Express {
   app.use("/api/teams/:teamId/api-keys", createApiKeyRouter(dataSource));
   app.use("/api/teams/:teamId/provider-keys", createProviderKeyRouter(dataSource));
   app.use("/api/teams/:teamId/model-groups", createModelGroupRouter(dataSource));
+  app.use("/api/teams/:teamId/budgets", createBudgetRouter(dataSource));
   app.use("/api/teams", createTeamRouter(dataSource));
   app.use("/api/invitations", createInvitationRouter(dataSource));
   app.use("/api/models", createModelRouter(dataSource));
