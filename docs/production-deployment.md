@@ -6,7 +6,7 @@ This app is deployed as a single container: Express serves `/api/*` and `/v1/*`,
 
 ```bash
 fly apps create llm-router-ivanrclaw
-fly volumes create llm_router_data --region mad --size 1 --app llm-router-ivanrclaw
+fly volumes create llm_router_data --region cdg --size 1 --app llm-router-ivanrclaw
 fly secrets set \
   JWT_SECRET="$(openssl rand -base64 48)" \
   ENCRYPTION_KEY="$(openssl rand -base64 32)" \
