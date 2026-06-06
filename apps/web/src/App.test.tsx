@@ -19,7 +19,7 @@ function setupMatchMedia(matches = false) {
 }
 
 describe("App", () => {
-  it("renders auth as a standalone view instead of mixing login and register into the dashboard", () => {
+  it("renders auth as a standalone route instead of mixing login and register into the dashboard", () => {
     render(<App initialRoute="/login" />);
 
     expect(screen.getByRole("main", { name: "Authentication" })).toBeInTheDocument();
@@ -29,12 +29,12 @@ describe("App", () => {
     expect(screen.queryByRole("heading", { name: "Usage statistics" })).not.toBeInTheDocument();
   });
 
-  it("renders a granular professional dashboard shell with grouped sidebar navigation and no inline auth forms", () => {
-    render(<App />);
+  it("renders dashboard overview as a real page route with path-based navigation", () => {
+    render(<App initialRoute="/dashboard" />);
 
     expect(screen.getByRole("heading", { name: "LLM Router" })).toBeInTheDocument();
     expect(screen.getByLabelText("Primary navigation")).toBeInTheDocument();
-    expect(screen.getByLabelText("Breadcrumb")).toHaveTextContent("Dashboard");
+    expect(screen.getByLabelText("Breadcrumb")).toHaveTextContent("Dashboard / Overview");
     expect(screen.getByLabelText("Current team")).toHaveValue("demo");
     expect(screen.getByLabelText("Language")).toHaveValue("en");
     expect(screen.getByRole("button", { name: "Switch to dark mode" })).toBeInTheDocument();
@@ -44,44 +44,67 @@ describe("App", () => {
     expect(within(sidebar).getByText("Operate")).toBeInTheDocument();
     expect(within(sidebar).getByText("Secure")).toBeInTheDocument();
     expect(within(sidebar).getByText("Resources")).toBeInTheDocument();
-    expect(within(sidebar).getByRole("link", { name: /Overview/ })).toHaveAttribute("href", "#overview");
-    expect(within(sidebar).getByRole("link", { name: /Usage/ })).toHaveAttribute("href", "#stats");
-    expect(within(sidebar).getByRole("link", { name: /Platform keys/ })).toHaveAttribute("href", "#api-keys");
-    expect(within(sidebar).getByRole("link", { name: /Provider keys/ })).toHaveAttribute("href", "#provider-keys");
-    expect(within(sidebar).getByRole("link", { name: /Models/ })).toHaveAttribute("href", "#models");
-    expect(within(sidebar).getByRole("link", { name: /Model groups/ })).toHaveAttribute("href", "#model-groups");
-    expect(within(sidebar).getByRole("link", { name: /Budgets/ })).toHaveAttribute("href", "#budgets");
-    expect(within(sidebar).getByRole("link", { name: /Integration docs/ })).toHaveAttribute("href", "#docs");
+    expect(within(sidebar).getByRole("link", { name: /Overview/ })).toHaveAttribute("href", "/dashboard");
+    expect(within(sidebar).getByRole("link", { name: /Usage/ })).toHaveAttribute("href", "/dashboard/stats");
+    expect(within(sidebar).getByRole("link", { name: /Platform keys/ })).toHaveAttribute("href", "/dashboard/api-keys");
+    expect(within(sidebar).getByRole("link", { name: /Provider keys/ })).toHaveAttribute("href", "/dashboard/provider-keys");
+    expect(within(sidebar).getByRole("link", { name: /Models/ })).toHaveAttribute("href", "/dashboard/models");
+    expect(within(sidebar).getByRole("link", { name: /Model groups/ })).toHaveAttribute("href", "/dashboard/model-groups");
+    expect(within(sidebar).getByRole("link", { name: /Budgets/ })).toHaveAttribute("href", "/dashboard/budgets");
+    expect(within(sidebar).getByRole("link", { name: /Integration docs/ })).toHaveAttribute("href", "/dashboard/docs");
 
     expect(screen.getByRole("heading", { name: "Control center" })).toBeInTheDocument();
     expect(screen.getByText("Route traffic, control cost, and monitor OpenAI-compatible usage from focused sections.")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Integration docs" })).toBeInTheDocument();
-    expect(screen.getByText(/curl -s -X POST/)).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Integration docs" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Sign in to LLM Router" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Create your LLM Router account" })).not.toBeInTheDocument();
   });
 
-  it("renders the Spanish dashboard shell with grouped sections", () => {
-    render(<App locale="es" />);
+  it("renders only the active dashboard page route instead of one long single-page dashboard", () => {
+    render(<App initialRoute="/dashboard/models" />);
+
+    expect(screen.getByLabelText("Breadcrumb")).toHaveTextContent("Dashboard / Models");
+    expect(screen.getByRole("heading", { name: "Model catalog" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Usage statistics" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Platform API keys" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Integration docs" })).not.toBeInTheDocument();
+  });
+
+  it("provides a responsive mobile navigation drawer", () => {
+    render(<App initialRoute="/dashboard/stats" />);
+
+    const mobileNav = screen.getByLabelText("Mobile navigation");
+    expect(mobileNav).toHaveAttribute("aria-hidden", "true");
+    const openButton = screen.getByRole("button", { name: "Open navigation" });
+    expect(openButton).toHaveAttribute("aria-expanded", "false");
+
+    fireEvent.click(openButton);
+
+    expect(openButton).toHaveAttribute("aria-expanded", "true");
+    expect(mobileNav).toHaveAttribute("aria-hidden", "false");
+    expect(within(mobileNav).getByRole("link", { name: /Budgets/ })).toHaveAttribute("href", "/dashboard/budgets");
+  });
+
+  it("renders the Spanish dashboard shell with real routed sections", () => {
+    render(<App locale="es" initialRoute="/dashboard/docs" />);
 
     expect(screen.getByLabelText("Navegación principal")).toBeInTheDocument();
     expect(screen.getByLabelText("Idioma")).toHaveValue("es");
-    expect(screen.getByLabelText("Miga de pan")).toHaveTextContent("Panel");
-    expect(screen.getByRole("heading", { name: "Centro de control" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Miga de pan")).toHaveTextContent("Panel / Documentación de integración");
     const sidebar = screen.getByLabelText("Navegación principal");
     expect(within(sidebar).getByText("Analizar")).toBeInTheDocument();
     expect(within(sidebar).getByText("Operar")).toBeInTheDocument();
     expect(within(sidebar).getByText("Seguridad")).toBeInTheDocument();
-    expect(within(sidebar).getByText("Recursos"));
+    expect(within(sidebar).getByText("Recursos")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Documentación de integración" })).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Inicia sesión en LLM Router" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Centro de control" })).not.toBeInTheDocument();
   });
 
   it("toggles Tailwind class-based dark mode and persists the user choice", () => {
     setupMatchMedia(false);
     localStorage.clear();
     document.documentElement.classList.remove("dark", "light");
-    render(<App />);
+    render(<App initialRoute="/dashboard" />);
     fireEvent.click(screen.getByRole("button", { name: "Switch to dark mode" }));
 
     expect(document.documentElement.classList.contains("dark")).toBe(true);
