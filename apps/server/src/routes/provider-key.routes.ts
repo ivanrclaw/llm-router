@@ -2,6 +2,7 @@ import { Router, type Request } from "express";
 import type { DataSource } from "typeorm";
 import { dashboardAuth, type AuthenticatedRequest } from "../middleware/dashboard-auth.js";
 import { ProviderKeyService } from "../services/provider-key.service.js";
+import { auditContextFromRequest } from "../services/audit-log.service.js";
 
 function teamIdFrom(req: Request): string {
   return String((req.params as Record<string, string | undefined>).teamId ?? "");
@@ -27,7 +28,7 @@ export function createProviderKeyRouter(dataSource: DataSource): Router {
 
   router.post("/", async (req, res, next) => {
     try {
-      const providerKey = await service.create((req as unknown as AuthenticatedRequest).user.id, teamIdFrom(req), req.body);
+      const providerKey = await service.create((req as unknown as AuthenticatedRequest).user.id, teamIdFrom(req), req.body, auditContextFromRequest(req));
       res.status(201).json({ providerKey });
     } catch (error) { next(error); }
   });

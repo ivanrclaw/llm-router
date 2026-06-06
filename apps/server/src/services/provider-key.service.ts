@@ -1,6 +1,6 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes, randomUUID } from "crypto";
 import type { DataSource } from "typeorm";
-import { AuditLogService } from "./audit-log.service.js";
+import { AuditLogService, type AuditContext } from "./audit-log.service.js";
 import { TeamService } from "./team.service.js";
 import { OpenCodeZenAdapter, OPENCODE_ZEN_SLUG } from "../providers/opencode-zen.adapter.js";
 
@@ -98,7 +98,7 @@ export class ProviderKeyService {
     return (await this.listRows(teamId)).map(toView);
   }
 
-  async create(actorUserId: string, teamId: string, input: Record<string, unknown>): Promise<ProviderKeyView> {
+  async create(actorUserId: string, teamId: string, input: Record<string, unknown>, context?: AuditContext): Promise<ProviderKeyView> {
     await this.teamService.requireRole(actorUserId, teamId, "admin");
     const name = String(input.name ?? "").trim();
     const key = String(input.key ?? "").trim();
@@ -126,7 +126,7 @@ export class ProviderKeyService {
         input.isEnabled === false ? 0 : 1,
       ],
     );
-    await this.auditLogService.record({ teamId, actorUserId, action: "provider_api_key.created", resourceType: "provider_api_key", resourceId: id, metadata: { providerSlug, keyPrefix: prefix } });
+    await this.auditLogService.record({ teamId, actorUserId, action: "provider_api_key.created", resourceType: "provider_api_key", resourceId: id, metadata: { providerSlug, keyPrefix: prefix }, context });
     return toView(await this.getById(teamId, id));
   }
 

@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { redactSecrets } from "../lib/redaction.js";
 
 export type HttpError = Error & { statusCode?: number; code?: string; details?: unknown };
 
@@ -11,8 +12,8 @@ export function errorHandler(error: HttpError, _req: Request, res: Response, _ne
   res.status(status).json({
     error: {
       code: error.code ?? (status === 500 ? "internal_error" : "request_error"),
-      message: status === 500 ? "Internal server error" : error.message,
-      ...(error.details === undefined ? {} : { details: error.details }),
+      message: status === 500 ? "Internal server error" : redactSecrets(error.message),
+      ...(error.details === undefined ? {} : { details: redactSecrets(error.details) }),
     },
   });
 }

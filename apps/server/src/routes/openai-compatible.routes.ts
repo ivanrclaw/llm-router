@@ -10,6 +10,7 @@ import { RouterService } from "../services/router.service.js";
 import { UsageService, type ProviderUsagePayload } from "../services/usage.service.js";
 import { BudgetService } from "../services/budget.service.js";
 import { SessionAffinityService } from "../services/session-affinity.service.js";
+import { redactSecrets } from "../lib/redaction.js";
 
 const messageSchema = z.object({
   role: z.enum(["system", "user", "assistant", "tool"]),
@@ -23,6 +24,7 @@ const chatCompletionSchema = z.object({
   messages: z.array(messageSchema).min(1),
   stream: z.boolean().optional().default(false),
 }).passthrough();
+
 
 function openAiError(res: ExpressResponse, status: number, code: string, message: string, type = "invalid_request_error") {
   res.status(status).json({ error: { message, type, code } });
@@ -232,7 +234,7 @@ export function createOpenAiCompatibleRouter(dataSource: DataSource): Router {
           await providerKeyService.markProviderFailure(platformApiKey.teamId, providerKey.id, providerResponse.status);
           continue;
         }
-        const bodyText = await providerResponse.text();
+        const bodyText = redactSecrets(await providerResponse.text());
         await usageService.record({ teamId: platformApiKey.teamId, userId: platformApiKey.userId, platformApiKeyId: platformApiKey.id, providerId: resolved.providerId, providerApiKeyId: providerKey.id, model: resolved, requestedModel, sessionKeyHash, status: "error", errorCode: `provider_${providerResponse.status}`, httpStatus: providerResponse.status, promptTextForEstimate: promptText, latencyMs: Date.now() - startedAt, isStreaming: !!parsed.data.stream });
         res.status(providerResponse.status).json({ error: { message: bodyText || "Provider error", type: "invalid_request_error", code: `provider_${providerResponse.status}` } });
         return;
