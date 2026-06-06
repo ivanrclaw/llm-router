@@ -4,6 +4,7 @@ import { ProviderKeysPage } from "./pages/ProviderKeysPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import { ModelGroupsPage } from "./pages/ModelGroupsPage";
 import { BudgetsPage } from "./pages/BudgetsPage";
+import { StatsPage } from "./pages/StatsPage";
 import { t, type Locale } from "./lib/i18n";
 import { LoginPage, RegisterPage } from "./pages/AuthPages";
 
@@ -44,6 +45,27 @@ export function App({ locale = "en" }: { locale?: Locale }) {
         </div>
         <div className="lg:col-span-2">
           <BudgetsPage locale={locale} policies={[{ id: "demo-budget", scopeType: "team", scopeLabel: "Demo Team", dailyBudgetUsdCents: 500, monthlyBudgetUsdCents: 10000, hardLimit: true, alertThresholds: [50, 80] }]} />
+        </div>
+        <div className="lg:col-span-2">
+          <StatsPage
+            locale={locale}
+            teamId="demo"
+            stats={{
+              filters: { teamId: "demo", from: "2026-06-01", to: "2026-06-03" },
+              overview: { requestCount: 4, successCount: 3, errorCount: 1, promptTokens: 400, completionTokens: 200, totalTokens: 600, cachedReadTokens: 600, cachedWriteTokens: 300, costUsdCents: 600, savedUsdCents: 120 },
+              latency: { avgLatencyMs: 25, p50LatencyMs: 20, p95LatencyMs: 40 },
+              cache: { cachedReadTokens: 600, cachedWriteTokens: 300, savedUsdCents: 120, cacheTokenRatio: 2.25 },
+              errors: [{ errorCode: "provider_rate_limited", count: 1, httpStatus: 429 }],
+              timeSeries: [{ date: "2026-06-01", requestCount: 1, costUsdCents: 100, savedUsdCents: 20 }, { date: "2026-06-02", requestCount: 3, costUsdCents: 500, savedUsdCents: 100 }],
+              breakdowns: {
+                models: [{ id: "demo-model", label: "big-pickle", requestCount: 4, costUsdCents: 600, savedUsdCents: 120 }],
+                modelGroups: [{ id: "free-coding", label: "free-coding", requestCount: 4, costUsdCents: 600, savedUsdCents: 120 }],
+                users: [{ id: "demo-user", label: "demo@example.com", requestCount: 4, costUsdCents: 600, savedUsdCents: 120 }],
+                platformApiKeys: [{ id: "demo-key", label: "Demo key", requestCount: 4, costUsdCents: 600, savedUsdCents: 120 }],
+                providerKeys: [{ id: "demo-provider-key", label: "Demo Zen key", requestCount: 4, costUsdCents: 600, savedUsdCents: 120 }],
+              },
+            }}
+          />
         </div>
       </main>
     </div>
