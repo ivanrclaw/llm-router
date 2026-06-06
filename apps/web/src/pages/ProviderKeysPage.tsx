@@ -52,7 +52,7 @@ export function ProviderKeysPage({ locale, providerKeys = [] }: { locale: Locale
                 <div><dt className="text-neutral-500">{t(locale, "priority")}</dt><dd>{key.priority}</dd></div>
                 <div><dt className="text-neutral-500">{t(locale, "rateLimit")}</dt><dd>{key.rpmLimit ? `${key.rpmLimit} rpm` : "—"}</dd></div>
                 <div><dt className="text-neutral-500">{t(locale, "health")}</dt><dd>{healthLabel(locale, key.healthStatus)}</dd></div>
-                <div><dt className="text-neutral-500">{t(locale, "provider")}</dt><dd>{key.isEnabled ? "Enabled" : "Disabled"}</dd></div>
+                <div><dt className="text-neutral-500">{t(locale, "provider")}</dt><dd>{key.isEnabled ? t(locale, "enabled") : t(locale, "disabled")}</dd></div>
               </dl>
             </article>
           ))

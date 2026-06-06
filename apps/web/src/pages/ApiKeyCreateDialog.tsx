@@ -23,11 +23,11 @@ export function ApiKeyCreateDialog({
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="text-sm font-medium">
           {t(locale, "apiKeyName")}
-          <input className="mt-1 w-full rounded-lg border px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900" name="name" placeholder="CI key" />
+          <input className="mt-1 w-full rounded-lg border px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900" name="name" placeholder={t(locale, "apiKeyNamePlaceholder")} />
         </label>
         <label className="text-sm font-medium">
           {t(locale, "rateLimit")}
-          <input className="mt-1 w-full rounded-lg border px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900" name="rateLimitRpm" placeholder="60 rpm" />
+          <input className="mt-1 w-full rounded-lg border px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900" name="rateLimitRpm" placeholder={t(locale, "rateLimitPlaceholder")} />
         </label>
       </div>
       <fieldset className="mt-4 rounded-lg border border-neutral-200 p-3 dark:border-neutral-800">

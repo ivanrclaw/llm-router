@@ -105,7 +105,7 @@ export function StatsPage({ locale, teamId, stats }: { locale: Locale; teamId: s
         </label>
         <label className="text-sm font-medium">
           {t(locale, "modelFilter")}
-          <input className="mt-1 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900" type="text" aria-label={t(locale, "modelFilter")} placeholder="big-pickle" />
+          <input className="mt-1 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900" type="text" aria-label={t(locale, "modelFilter")} placeholder={t(locale, "modelFilterPlaceholder")} />
         </label>
       </form>
 
