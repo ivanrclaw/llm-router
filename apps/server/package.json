@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "rm -rf dist && tsc --incremental false",
     "start": "node dist/index.js",
     "lint": "tsc --noEmit",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "backup:sqlite": "tsx src/scripts/backup-sqlite.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

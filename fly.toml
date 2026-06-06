@@ -1,0 +1,40 @@
+app = "llm-router"
+primary_region = "mad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3001"
+  DATABASE_PATH = "/data/llm-router.sqlite"
+  RUN_MIGRATIONS = "true"
+  SERVE_WEB_DIST = "true"
+  CORS_ORIGINS = "https://llm-router.fly.dev"
+  AUTH_RATE_LIMIT_RPM = "30"
+  V1_RATE_LIMIT_RPM = "120"
+
+[mounts]
+  source = "llm_router_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "30s"
+    method = "GET"
+    path = "/api/ready"
+    protocol = "http"
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1
